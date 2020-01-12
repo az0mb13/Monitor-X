@@ -1,3 +1,3 @@
 # Monitor-X
 
-Continuous asset monitoring and hopefully Slackbot
+Continuous asset monitoring and Slackbot
