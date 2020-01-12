@@ -73,9 +73,7 @@ def compare(collection):
 	        data = {"text": "New subdomain added/removed: "+difference}#improve this feature to detect add/remove
 	        response = requests.post('https://hooks.slack.com/services/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', json=data)
 	        print(response.status_code)
-	#THIS BLOCK IS NOT REACHABLE FIX THIS        
 	if collection.find().count() == 1:
-	    #print("First occurence")
 	    myCursor = collection.find()
 	    for docuu in myCursor:
 	        firstRecord = list(docuu.values())
