@@ -15,6 +15,11 @@ import requests
 client = MongoClient('mongodb://root:sg3043il@127.0.0.1:27017/')
 db = client.subdomains
 
+def converttostr(input_seq, seperator):
+   # Join all the strings in list
+   final_str = seperator.join(input_seq)
+   return final_str
+
 def diff(list1, list2):
     return (list(set(list1).symmetric_difference(set(list2))))
 
@@ -48,7 +53,8 @@ def addDomain():
     
 
 def compare(collection):
-	if collection.find().count() > 0:
+	print("Collection count is :", collection.count())
+	if collection.count() > 1:
 	    #print("domain exists")#add compare logic here
 	    cursorNew = collection.find().sort([('_id', -1)]).limit(1)
 	    for doc in cursorNew:
@@ -64,16 +70,17 @@ def compare(collection):
 	        response = requests.post('https://hooks.slack.com/services/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', json=data)
 	        print(response.status_code)
 	#THIS BLOCK IS NOT REACHABLE FIX THIS        
-	if collection.find().count() == 0:
+	if collection.find().count() == 1:
 	    #print("First occurence")
 	    myCursor = collection.find()
 	    for docuu in myCursor:
 	        firstRecord = list(docuu.values())
 	        firstRecord = firstRecord[1:]
-	        print(firstRecord)
-	        #data = {"text": "First scan done:\n"+firstRecord}
-	        #response = requests.post('https://hooks.slack.com/services/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', json=data)
-	        #print(response.status_code)
+	        separator = '\n'
+	        firstRecord = converttostr(firstRecord, separator)
+	        data = {"text": "First scan done:\n"+firstRecord}
+	        response = requests.post('https://hooks.slack.com/services/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', json=data)
+	        print(response.status_code)
 
 def runOneScan():
     domain = str(input("Enter the domain to Scan: "))
