@@ -15,18 +15,47 @@ def diff(list1, list2):
 def addDomain():
     mycol = db["targets"]
     domain = str(input("Enter the domain to Monitor: "))
-    print("Domain %s is added to the target list" % (domain))
-    
-    #Getting key value from db and incrementing it by 1 to add next domain in order
-
-    cur = mycol.find().sort([('_id', -1)]).limit(1)
-    for doc in cur:
-        res = list(doc.keys())
-    key_index = str(int(res[-1])+1)
+   # print("Domain %s is added to the target list" % (domain))
+    key_index = "1"
     to_insert = {
             key_index: domain
             }
-    db.targets.insert_one(to_insert)
+    #Getting key value from db and incrementing it by 1 to add next domain in order
+    #print(mycol.find().count() > 0)
+    if mycol.find().count() > 0:
+    	cur = mycol.find().sort([('_id', -1)]).limit(1)
+    	for doc in cur:
+    	    res = list(doc.keys())
+    	    print(res)
+    	key_index = str(int(res[-1])+1)
+    	print(key_index)
+    	to_insert = {
+    	        key_index: domain
+    	        }
+    	db.targets.insert_one(to_insert)
+    else:
+    	db.targets.insert_one(to_insert)
+
+def compare(collection):
+	if collection.find() == True:
+	    #print("domain exists")#add compare logic here
+	    cursorNew = collection.find().sort([('_id', -1)]).limit(1)
+	    for doc in cursorNew:
+	        newRecord = list(doc.values())
+	        newRecord = newRecord[1:]
+	    cursorOld = collection.find().sort([('_id', -1)]).skip(1).limit(1)
+	    for docu in cursorOld:
+	        oldRecord = list(docu.values())
+	        oldRecord = oldRecord[1:]
+	    print(diff(oldRecord, newRecord))
+	else:
+	    #print("First occurence")
+	    myCursor = collection.find()
+	    for docuu in myCursor:
+	        firstRecord = list(docuu.values())
+	        firstRecord = firstRecord[1:]
+	        print(firstRecord)
+
 
 def runOneScan():
     domain = str(input("Enter the domain to Scan: "))
@@ -48,25 +77,34 @@ def runOneScan():
         	data[(key)] = val
 
     collection.insert_one(data)
+    compare(collection)
 
-    if collection.find() == True:
-        print("domain exists")#add compare logic here
-        cursorNew = collection.find().sort([('_id', -1)]).limit(1)
-        for doc in cursorNew:
-            newRecord = list(doc.values())
-            newRecord = newRecord[1:]
-        cursorOld = collection.find().sort([('_id', -1)]).skip(1).limit(1)
-        for docu in cursorOld:
-            oldRecord = list(docu.values())
-            oldRecord = oldRecord[1:]
-        print(diff(oldRecord, newRecord))
+def runAllScan():
+    collection = db["targets"]
+    if collection.find() == False:
+        print("No domain in the database. Add a domain and run the tool again")
     else:
-        print("First occurence")
-        myCursor = collection.find()
-        for docuu in myCursor:
-            firstRecord = list(docuu.values())
-            firstRecord = firstRecord[1:]
-            print(firstRecord)
+        targetCursor = collection.find()
+        for d in targetCursor:
+            targetList = list(d.values())
+            targetList = str(targetList[1:])
+            targetList = targetList[2:-2]
+            coll = db[targetList]
+            with open(targetList+'_dir/'+targetList+'_final.txt', 'r') as program:
+                data = program.readlines()
+            with open('outfile', 'w') as program:
+                for (number, line) in enumerate(data):
+                	program.write('%d %s' % (number + 1, line))
+
+            #converting file to json to add to db
+            data = {}
+            with open("outfile") as f:
+                for line in f:
+                	(key, val) = line.split()
+                	data[(key)] = val
+
+            coll.insert_one(data)
+            compare(coll)
 
 def main():
     while True:
