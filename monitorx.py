@@ -136,8 +136,19 @@ def runAllScan():
 
 def main():
     while True:
-    	#subprocess.call('clear',shell=True)
-    	print("----------------MONITOR-X---------------------\n")
+    	subprocess.call('clear',shell=True)
+    	print("""
+    		  ▄▄▄▄███▄▄▄▄    ▄██████▄  ███▄▄▄▄    ▄█      ███      ▄██████▄     ▄████████ 		▀████    ▐████▀ 
+    		▄██▀▀▀███▀▀▀██▄ ███    ███ ███▀▀▀██▄ ███  ▀█████████▄ ███    ███   ███    ███ 		  ███▌   ████▀  
+    		███   ███   ███ ███    ███ ███   ███ ███▌    ▀███▀▀██ ███    ███   ███    ███ 		   ███  ▐███    
+    		███   ███   ███ ███    ███ ███   ███ ███▌     ███   ▀ ███    ███  ▄███▄▄▄▄██▀ 		   ▀███▄███▀    
+    		███   ███   ███ ███    ███ ███   ███ ███▌     ███     ███    ███ ▀▀███▀▀▀▀▀   		   ████▀██▄     
+    		███   ███   ███ ███    ███ ███   ███ ███      ███     ███    ███ ▀███████████ 		  ▐███  ▀███    
+    		███   ███   ███ ███    ███ ███   ███ ███      ███     ███    ███   ███    ███ 		 ▄███     ███▄  
+    		 ▀█   ███   █▀   ▀██████▀   ▀█   █▀  █▀      ▄████▀    ▀██████▀    ███    ███ 		████       ███▄ 
+    		                                                                   ███    ███                 
+    		""")
+    	print("----------------Subdomain Monitoring and SlackBot---------------------\n")
     	print("[1] - Add a Domain to monitoring list\n[2] - Show all domains\n[3] - Run the scan against a particular domain\n[4] - Run scans against all domains\n[5] - Exit\nSelect your option: ")
     	choice = int(input(">>> "))
     	if choice==1:
