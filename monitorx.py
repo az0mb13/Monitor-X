@@ -26,28 +26,38 @@ def addDomain():
     db.targets.insert_one(to_insert)
 
 def runOneScan():
-    domain = str(input("Enter the domain to scan: "))
+    domain = str(input("Enter the domain to Scan: "))
+    collection = db[domain]
     #reconx = subprocess.call(['./recon.sh', domain])
 
-    #appending line numbers to convert to dict json
-    with open('tedtest', 'r') as program:
+
+    with open(domain+'_dir/'+domain+'_final.txt', 'r') as program:
         data = program.readlines()
     with open('outfile', 'w') as program:
         for (number, line) in enumerate(data):
-            program.write('%d %s' % (number + 1, line))
+        	program.write('%d %s' % (number + 1, line))
 
     #converting file to json to add to db
     data = {}
     with open("outfile") as f:
         for line in f:
-            (key, val) = line.split()
-            data[(key)] = val
-        
-    collection = db.target
+        	(key, val) = line.split()
+        	data[(key)] = val
     collection.insert_one(data)
 
-def runAllScan():
-    print("TEST")
+    if domain in db.list_collection_names():
+        print("domain exists")#add compare logic here
+        #testlist = list(collection.find({}))
+        cursor = collection.find().sort([('_id', -1)]).limit(1)
+        for doc in cursor:
+        	subdList = list(doc.values())
+        	print(subdList[1:])
+    else:
+        print("toadd")
+    #appending line numbers to convert to dict json
+
+    #Comparing with previous stored values in db
+
 
 def main():
     while True:
