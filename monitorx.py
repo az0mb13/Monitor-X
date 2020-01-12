@@ -57,7 +57,7 @@ def addDomain():
     
 
 def compare(collection):
-	print("Collection count is :", collection.count())
+	#print("Collection count is :", collection.count())
 	if collection.count() > 1:
 	    #print("domain exists")#add compare logic here
 	    cursorNew = collection.find().sort([('_id', -1)]).limit(1)
