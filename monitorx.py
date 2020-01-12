@@ -9,6 +9,9 @@ import string
 client = MongoClient('mongodb://root:sg3043il@127.0.0.1:27017/')
 db = client.subdomains
 
+def diff(list1, list2):
+    return (list(set(list1)-set(list2)))
+
 def addDomain():
     mycol = db["targets"]
     domain = str(input("Enter the domain to Monitor: "))
@@ -48,15 +51,20 @@ def runOneScan():
     if domain in db.list_collection_names():
         print("domain exists")#add compare logic here
         #testlist = list(collection.find({}))
-        cursor = collection.find().sort([('_id', -1)]).limit(1)
-        for doc in cursor:
-        	subdList = list(doc.values())
-        	print(subdList[1:])
+        cursorNew = collection.find().sort([('_id', -1)]).limit(1)
+        for doc in cursorNew:
+            newRecord = list(doc.values())
+            newRecord = newRecord[1:]
+            print(newRecord)
+        cursorOld = collection.find().sort([('_id', -1)]).skip(1).limit(1)
+        for docu in cursorOld:
+            oldRecord = list(docu.values())
+            oldRecord = oldRecord[1:]
+            print(oldRecord)
+        print(diff(newRecord, oldRecord))
+
     else:
         print("toadd")
-    #appending line numbers to convert to dict json
-
-    #Comparing with previous stored values in db
 
 
 def main():
