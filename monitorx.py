@@ -1,8 +1,15 @@
 #!/usr/bin/python
 
+import os
+import slack
 from pymongo import MongoClient
 import subprocess
 import string
+import requests
+
+#SlackTest
+#sClient = slack.WebClient(token=os.environ['SLACK_API_TOKEN'])
+
 
 #DBtest
 client = MongoClient('mongodb://root:sg3043il@127.0.0.1:27017/')
@@ -33,9 +40,15 @@ def addDomain():
     	db.targets.insert_one(to_insert)
     else:
     	db.targets.insert_one(to_insert)
+    #TESTING SLACK
+    #command = "curl -X POST -H 'Content-type: application/json' --data '{\"text\":\" added to targets\" +domain+ \"\"}' https://hooks.slack.com/services/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"
+    data = {"text": domain+" added to targets"}
+    response = requests.post('https://hooks.slack.com/services/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', json=data)
+    print(response.status_code)
+    
 
 def compare(collection):
-	if collection.find() == True:
+	if collection.find().count() > 0:
 	    #print("domain exists")#add compare logic here
 	    cursorNew = collection.find().sort([('_id', -1)]).limit(1)
 	    for doc in cursorNew:
@@ -45,20 +58,27 @@ def compare(collection):
 	    for docu in cursorOld:
 	        oldRecord = list(docu.values())
 	        oldRecord = oldRecord[1:]
-	    print(diff(oldRecord, newRecord))
-	else:
+	        difference = str(diff(oldRecord, newRecord))
+	        difference = difference[2:-2]
+	        data = {"text": "New subdomain added/removed: "+difference}#improve this feature to detect add/remove
+	        response = requests.post('https://hooks.slack.com/services/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', json=data)
+	        print(response.status_code)
+	#THIS BLOCK IS NOT REACHABLE FIX THIS        
+	if collection.find().count() == 0:
 	    #print("First occurence")
 	    myCursor = collection.find()
 	    for docuu in myCursor:
 	        firstRecord = list(docuu.values())
 	        firstRecord = firstRecord[1:]
 	        print(firstRecord)
-
+	        #data = {"text": "First scan done:\n"+firstRecord}
+	        #response = requests.post('https://hooks.slack.com/services/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', json=data)
+	        #print(response.status_code)
 
 def runOneScan():
     domain = str(input("Enter the domain to Scan: "))
     collection = db[domain]
-    subprocess.call(['./recon.sh', domain])
+    #subprocess.call(['./recon.sh', domain])
 
 
     with open(domain+'_dir/'+domain+'_final.txt', 'r') as program:
@@ -107,7 +127,7 @@ def runAllScan():
 
 def main():
     while True:
-    	subprocess.call('clear',shell=True)
+    	#subprocess.call('clear',shell=True)
     	print("----------------MONITOR-X---------------------\n")
     	print("[1] - Add a Domain to monitoring list\n[2] - Run the scan against a particular domain\n[3] - Run scans against all domains\n[4] - Exit\nSelect your option: ")
     	choice = int(input(">>> "))
