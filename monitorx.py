@@ -1,7 +1,6 @@
 #!/usr/bin/python
 
 from pymongo import MongoClient
-from pprint import pprint
 import subprocess
 import string
 
@@ -15,13 +14,12 @@ def diff(list1, list2):
 def addDomain():
     mycol = db["targets"]
     domain = str(input("Enter the domain to Monitor: "))
-   # print("Domain %s is added to the target list" % (domain))
+    print("Domain %s is added to the target list" % (domain))
     key_index = "1"
     to_insert = {
             key_index: domain
             }
     #Getting key value from db and incrementing it by 1 to add next domain in order
-    #print(mycol.find().count() > 0)
     if mycol.find().count() > 0:
     	cur = mycol.find().sort([('_id', -1)]).limit(1)
     	for doc in cur:
@@ -60,7 +58,7 @@ def compare(collection):
 def runOneScan():
     domain = str(input("Enter the domain to Scan: "))
     collection = db[domain]
-    #reconx = subprocess.call(['./recon.sh', domain])
+    subprocess.call(['./recon.sh', domain])
 
 
     with open(domain+'_dir/'+domain+'_final.txt', 'r') as program:
@@ -89,6 +87,7 @@ def runAllScan():
             targetList = list(d.values())
             targetList = str(targetList[1:])
             targetList = targetList[2:-2]
+            subprocess.call(['./recon.sh', targetList])
             coll = db[targetList]
             with open(targetList+'_dir/'+targetList+'_final.txt', 'r') as program:
                 data = program.readlines()
@@ -108,20 +107,21 @@ def runAllScan():
 
 def main():
     while True:
-        print("----------------MONITOR-X---------------------\n")
-        print("[1] - Add a Domain to monitoring list\n[2] - Run the scan against a particular domain\n[3] - Run scans against all domains\n[4] - Exit\nSelect your option: ")
-        choice = int(input(">>> "))
-        if choice==1:
-            addDomain()
-        elif choice==2:
-            runOneScan()
-        elif choice==3:
-            runAllScan()
-        elif choice==4:
-            print("Bye")
-            break
-        else:
-            print("Invalid Choice, please choose again\n")
+    	subprocess.call('clear',shell=True)
+    	print("----------------MONITOR-X---------------------\n")
+    	print("[1] - Add a Domain to monitoring list\n[2] - Run the scan against a particular domain\n[3] - Run scans against all domains\n[4] - Exit\nSelect your option: ")
+    	choice = int(input(">>> "))
+    	if choice==1:
+    	    addDomain()
+    	elif choice==2:
+    	    runOneScan()
+    	elif choice==3:
+    	    runAllScan()
+    	elif choice==4:
+    	    print("Bye")
+    	    break
+    	else:
+    	    print("Invalid Choice, please choose again\n")
 
 if __name__ == "__main__":
     main()
