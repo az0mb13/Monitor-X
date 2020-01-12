@@ -23,6 +23,12 @@ def converttostr(input_seq, seperator):
 def diff(list1, list2):
     return (list(set(list1).symmetric_difference(set(list2))))
 
+def showDomains():
+	mycol = db["targets"]
+	domains = mycol.find()
+	for doc in domains:
+		print(doc)
+
 def addDomain():
     mycol = db["targets"]
     domain = str(input("Enter the domain to Monitor: "))
@@ -36,9 +42,7 @@ def addDomain():
     	cur = mycol.find().sort([('_id', -1)]).limit(1)
     	for doc in cur:
     	    res = list(doc.keys())
-    	    print(res)
     	key_index = str(int(res[-1])+1)
-    	print(key_index)
     	to_insert = {
     	        key_index: domain
     	        }
@@ -114,7 +118,7 @@ def runAllScan():
             targetList = list(d.values())
             targetList = str(targetList[1:])
             targetList = targetList[2:-2]
-            subprocess.call(['./recon.sh', targetList])
+            #subprocess.call(['./recon.sh', targetList])
             coll = db[targetList]
             with open(targetList+'_dir/'+targetList+'_final.txt', 'r') as program:
                 data = program.readlines()
@@ -136,15 +140,17 @@ def main():
     while True:
     	#subprocess.call('clear',shell=True)
     	print("----------------MONITOR-X---------------------\n")
-    	print("[1] - Add a Domain to monitoring list\n[2] - Run the scan against a particular domain\n[3] - Run scans against all domains\n[4] - Exit\nSelect your option: ")
+    	print("[1] - Add a Domain to monitoring list\n[2] - Show all domains\n[3] - Run the scan against a particular domain\n[4] - Run scans against all domains\n[5] - Exit\nSelect your option: ")
     	choice = int(input(">>> "))
     	if choice==1:
     	    addDomain()
     	elif choice==2:
-    	    runOneScan()
+    		showDomains()
     	elif choice==3:
-    	    runAllScan()
+    	    runOneScan()
     	elif choice==4:
+    	    runAllScan()
+    	elif choice==5:
     	    print("Bye")
     	    break
     	else:

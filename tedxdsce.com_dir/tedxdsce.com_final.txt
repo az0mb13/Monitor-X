@@ -16,3 +16,4 @@ blog.tedxdsce.com
 cdn.tedxdsce.com
 cpanel.tedxdsce.com
 newsubd.tedxdsce.com
+slekd.tedxdsce.com
