@@ -10,7 +10,7 @@ client = MongoClient('mongodb://root:sg3043il@127.0.0.1:27017/')
 db = client.subdomains
 
 def diff(list1, list2):
-    return (list(set(list1)-set(list2)))
+    return (list(set(list1).symmetric_difference(set(list2))))
 
 def addDomain():
     mycol = db["targets"]
@@ -46,26 +46,27 @@ def runOneScan():
         for line in f:
         	(key, val) = line.split()
         	data[(key)] = val
+
     collection.insert_one(data)
 
-    if domain in db.list_collection_names():
+    if collection.find() == True:
         print("domain exists")#add compare logic here
-        #testlist = list(collection.find({}))
         cursorNew = collection.find().sort([('_id', -1)]).limit(1)
         for doc in cursorNew:
             newRecord = list(doc.values())
             newRecord = newRecord[1:]
-            print(newRecord)
         cursorOld = collection.find().sort([('_id', -1)]).skip(1).limit(1)
         for docu in cursorOld:
             oldRecord = list(docu.values())
             oldRecord = oldRecord[1:]
-            print(oldRecord)
-        print(diff(newRecord, oldRecord))
-
+        print(diff(oldRecord, newRecord))
     else:
-        print("toadd")
-
+        print("First occurence")
+        myCursor = collection.find()
+        for docuu in myCursor:
+            firstRecord = list(docuu.values())
+            firstRecord = firstRecord[1:]
+            print(firstRecord)
 
 def main():
     while True:
