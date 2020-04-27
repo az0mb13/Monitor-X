@@ -12,7 +12,7 @@ import requests
 
 
 #DBtest
-client = MongoClient('mongodb://root:sg3043il@127.0.0.1:27017/')
+client = MongoClient('mongodb://root:<pass>@127.0.0.1:27017/')
 db = client.subdomains
 
 def converttostr(input_seq, seperator):
@@ -52,7 +52,7 @@ def addDomain():
     #TESTING SLACK
     #command = "curl -X POST -H 'Content-type: application/json' --data '{\"text\":\" added to targets\" +domain+ \"\"}' https://hooks.slack.com/services/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"
     data = {"text": domain+" added to targets"}
-    response = requests.post('https://hooks.slack.com/services/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', json=data)
+    response = requests.post('https://hooks.slack.com/services/TS7G0E16X/BSM6LSR0E/hook', json=data)
     print(response.status_code)
     
 
@@ -71,7 +71,7 @@ def compare(collection):
 	        difference = str(diff(oldRecord, newRecord))
 	        difference = difference[2:-2]
 	        data = {"text": "New subdomain added/removed: "+difference}#improve this feature to detect add/remove
-	        response = requests.post('https://hooks.slack.com/services/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', json=data)
+	        response = requests.post('https://hooks.slack.com/services/TS7G0E16X/BSM6LSR0E/hook', json=data)
 	        print(response.status_code)
 	if collection.find().count() == 1:
 	    myCursor = collection.find()
@@ -81,7 +81,7 @@ def compare(collection):
 	        separator = '\n'
 	        firstRecord = converttostr(firstRecord, separator)
 	        data = {"text": "First scan done:\n"+firstRecord}
-	        response = requests.post('https://hooks.slack.com/services/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', json=data)
+	        response = requests.post('https://hooks.slack.com/services/TS7G0E16X/BSM6LSR0E/hook', json=data)
 	        print(response.status_code)
 
 def runOneScan():
